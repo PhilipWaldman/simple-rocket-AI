@@ -1,2 +1,2 @@
-# simple-rocket-AI
- 
+# Simple Rocket AI
+
