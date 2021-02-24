@@ -1,7 +1,7 @@
 class Rocket {
   PVector pos, vel, acc, size;
-  float fuel, maxFuel = 75, gravity = 0.2, impactSpeed, maxImpactSpeed=0.5, horSpeed, maxHorSpeed=0.5, distFromTarget, maxDistFromTarget=5;
-  boolean exploded = false, landed=false, boost = false, boostRight = false, boostLeft = false;
+  float fuel, maxFuel = 75, gravity = 0.2, impactSpeed, maxImpactSpeed = 0.5, horSpeed, maxHorSpeed = 0.5, distFromTarget, maxDistFromTarget = 5;
+  boolean exploded = false, landed = false, boost = false, boostRight = false, boostLeft = false;
   FlightComputer fComp;
 
   Rocket(float startX, float startY) {
@@ -25,8 +25,9 @@ class Rocket {
     puffLeft = loadImage("resources/puff_left.png");
     explosion = loadImage("resources/explosion/test.png");
     legPics = new PImage[18];
-    for (int i=0; i<legPics.length; i++)
-      legPics[i] = loadImage("resources/legs/legs_"+i+".png");
+    for (int i = 0; i < legPics.length; i++) {
+      legPics[i] = loadImage("resources/legs/legs_" + i + ".png");
+    }
   }
 
   void update() {
@@ -34,65 +35,71 @@ class Rocket {
       execute();
       updateFuel();
 
-      if (boost)
+      if (boost) {
         acc.y = -0.5;
-      else
+      } else {
         acc = new PVector();
+      }
       acc.y += gravity;
 
       acc.x = 0;
-      if (boostRight)
+      if (boostRight) {
         acc.x -= 0.1;
-      if (boostLeft)
+      }
+      if (boostLeft) {
         acc.x += 0.1;
+      }
 
       move();
-    } else
+    } else {
       distFromTarget = dist(pos.x, pos.y+size.y-16, target.x, target.y);
+    }
 
-    int dist = (int)((pos.y+size.y-16 - height*0.7)*((float)legPics.length/(height*0.2)));
-    int num = dist <0 ? 0 : dist;
-    legPic = num>=legPics.length ? legPics.length-1 : num;
+    int dist = (int) ((pos.y + size.y - 16 - height * 0.7) * ((float) legPics.length / (height * 0.2)));
+    int num = dist < 0 ? 0 : dist;
+    legPic = num >= legPics.length ? legPics.length - 1 : num;
   }
 
   void execute() {
-    if (fComp.step<fComp.boostSteps.length) {
+    if (fComp.step < fComp.boostSteps.length) {
       int step = fComp.step;
 
-      if (fComp.boostSteps[step]==0)
-        boost=false;
-      else
-        boost=true;
-
-      if (fComp.turnSteps[step]==0) {
-        boostLeft=true;
-        boostRight=false;
-      } else if (fComp.turnSteps[step]==2) {
-        boostLeft=false;
-        boostRight=true;
+      if (fComp.boostSteps[step] == 0) {
+        boost = false;
       } else {
-        boostLeft=false;
-        boostRight=false;
+        boost = true;
+      }
+
+      if (fComp.turnSteps[step] == 0) {
+        boostLeft = true;
+        boostRight = false;
+      } else if (fComp.turnSteps[step] == 2) {
+        boostLeft = false;
+        boostRight = true;
+      } else {
+        boostLeft = false;
+        boostRight = false;
       }
 
       fComp.step++;
     } else {
       boost = false;
-      boostLeft=false;
-      boostRight=false;
+      boostLeft = false;
+      boostRight = false;
     }
   }
 
   void move() {
-    if (pos.y+size.y-16>height) {
-      if (vel.y>maxImpactSpeed || abs(vel.x)>maxHorSpeed)
+    if (pos.y + size.y - 16 > height) {
+      if (vel.y > maxImpactSpeed || abs(vel.x) > maxHorSpeed) {
         exploded = true;
-      impactSpeed = vel.y<0 ? 0 : vel.y;
+      }
+      impactSpeed = vel.y < 0 ? 0 : vel.y;
       horSpeed = abs(vel.x);
       acc = new PVector();
       vel = new PVector();
-      pos.y = height-size.y+16;
-      landed=true;
+      pos.y = height - size.y + 16;
+      landed = true;
     }
 
     pos.add(vel);
@@ -100,17 +107,20 @@ class Rocket {
   }
 
   void updateFuel() {
-    if (fuel>0) {
-      if (boost)
+    if (fuel > 0) {
+      if (boost) {
         fuel--;
-      if (boostLeft)
-        fuel-=0.1;
-      if (boostRight)
-        fuel-=0.1;
+      }
+      if (boostLeft) {
+        fuel -= 0.1;
+      }
+      if (boostRight) {
+        fuel -= 0.1;
+      }
     } else {
-      boost=false;
-      boostLeft=false;
-      boostRight=false;
+      boost = false;
+      boostLeft = false;
+      boostRight = false;
       acc.x = 0;
       fuel = 0;
     }
@@ -124,25 +134,29 @@ class Rocket {
     if (!exploded) {
       image(body, pos.x, pos.y, size.x, size.y);
       image(legPics[legPic], pos.x, pos.y, size.x, size.y);
-      if (boost)
+      if (boost) {
         image(flame, pos.x, pos.y, size.x, size.y);
-      if (boostLeft)
+      }
+      if (boostLeft) {
         image(puffLeft, pos.x, pos.y, size.x, size.y);
-      if (boostRight)
+      }
+      if (boostRight) {
         image(puffRight, pos.x, pos.y, size.x, size.y);
-    } else
+      }
+    } else {
       image(explosion, pos.x, pos.y, size.x, size.y);
+    }
   }
 
   void showFuel() {
     fill(0, 200, 0);
     noStroke();
-    rect(width/50 + width/20, height*0.3 + height*0.4, -width/20, -height*0.4 * (fuel/maxFuel));
+    rect(width / 50 + width / 20, height * 0.3 + height * 0.4, - width / 20, - height * 0.4 * (fuel / maxFuel));
 
     noFill();
     stroke(0);
     strokeWeight(3);
-    rect(width/50, height*0.3, width/20, height*0.4);
+    rect(width / 50, height * 0.3, width / 20, height * 0.4);
     strokeWeight(1);
   }
 
@@ -165,39 +179,40 @@ class Rocket {
 
   String toString() {
     fill(0);
-    String str = "step: "+fComp.step
-      + "\npos: "+pos
-      + "\nvel: "+vel
-      + "\nacc: "+acc
-      + "\nsize: "+size
-      + "\nmaxFuel: "+maxFuel
-      + "\nfuel: "+fuel
-      + "\nlegPic: "+legPic
-      + "\nexploded: "+exploded
-      + "\nimpactSpeed: "+impactSpeed
-      + "\nmaxImpactSpeed: "+maxImpactSpeed
-      + "\nhorSpeed: "+horSpeed
-      + "\nmaxHorSpeed: "+maxHorSpeed
-      + "\ndistFromTarget: "+distFromTarget
-      + "\nmaxDistFromTarget: "+maxDistFromTarget
-      + "\nfitness: "+fitness()
-      + "\nlanding fitness: "+(100.0 / pow(10, impactSpeed/5))
-      + "\ntarget fitness: "+(100.0 / pow(10, distFromTarget/50) + 100)
-      + "\nfuel fitness: "+(maxFuel*log(fuel+1) + 200);
+    String str = "step: " + fComp.step
+      + "\npos: " + pos
+      + "\nvel: " + vel
+      + "\nacc: " + acc
+      + "\nsize: " + size
+      + "\nmaxFuel: " + maxFuel
+      + "\nfuel: " + fuel
+      + "\nlegPic: " + legPic
+      + "\nexploded: " + exploded
+      + "\nimpactSpeed: " + impactSpeed
+      + "\nmaxImpactSpeed: " + maxImpactSpeed
+      + "\nhorSpeed: " + horSpeed
+      + "\nmaxHorSpeed: " + maxHorSpeed
+      + "\ndistFromTarget: " + distFromTarget
+      + "\nmaxDistFromTarget: " + maxDistFromTarget
+      + "\nfitness: " + fitness()
+      + "\nlanding fitness: " + (100.0 / pow(10, impactSpeed / 5))
+      + "\ntarget fitness: " + (100.0 / pow(10, distFromTarget / 50) + 100)
+      + "\nfuel fitness: " + (maxFuel * log(fuel + 1) + 200);
     return str;
   }
 
   float fitness() {
-    if (exploded) // when impactSpeed > 0.5 || horSpeed > 0.5, optimize impactSpeed
-      return 100.0 / pow(10, impactSpeed/5);
-    else if (distFromTarget>maxDistFromTarget) // when > 5 from target, optimize landing spot
-      return 100.0 / pow(10, distFromTarget/50) + 100;
-    else // optimize fuel usage
-    return maxFuel*log(fuel+1) + 200;
+    if (exploded) { // when impactSpeed > 0.5 || horSpeed > 0.5, optimize impactSpeed
+      return 100.0 / pow(10, impactSpeed / 5);
+    } else if (distFromTarget > maxDistFromTarget) {// when > 5 from target, optimize landing spot
+      return 100.0 / pow(10, distFromTarget / 50) + 100;
+    } else {// optimize fuel usage
+      return maxFuel * log(fuel + 1) + 200;
+    }
   }
 
   Rocket clone() {
-    Rocket r = new Rocket(width/2, 0);
+    Rocket r = new Rocket(width / 2, 0);
     r.fComp = fComp.clone();
     return r;
   }
